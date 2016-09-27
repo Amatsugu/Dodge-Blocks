@@ -11,7 +11,19 @@ namespace LuminousVector
 		public float decay = 5;
 		[SerializeField]
 		public float intensity = 1;
-		
+
+		public Vector3 lastShakeOffset
+		{
+			get { return _lastShakeValue; }
+		}
+
+		public Vector3 shakeOffset
+		{
+			get { Simulate(); return _lastShakeValue; }
+		}
+
+		private Vector3 _lastShakeValue = Vector3.zero;
+
 		private Vector3 _curPos = new Vector3();
 		private float _intensity;
 
@@ -21,7 +33,7 @@ namespace LuminousVector
 			_intensity = intensity;
 		}
 
-		public Vector3 GetShakeOffset()
+		public Vector3 Simulate()
 		{
 			if (_intensity > 0)
 			{
@@ -34,7 +46,8 @@ namespace LuminousVector
 				_curPos = Vector3.zero;
 			else
 				_intensity = 0;
-			return _curPos;
+
+			return _lastShakeValue = _curPos;
 		}
 	}
 }

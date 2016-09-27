@@ -5,16 +5,24 @@ namespace LuminousVector
 {
 	public class Generator : MonoBehaviour
 	{
+		public enum GenerationPattern
+		{
+			Random,
+			Spiral
+		}
+
 		public Transform parent;
-		public Transform generatorTarget;
+		public Motor player;
 		public ObjectPoolerWorld cubePool;
 		public ObjectPoolerWorld phillarPool;
 		public List<ParticleSystem> particleSystems;
+		public GenerationPattern pattern;
 		public int width = 5;
 		public int lenght = 20;
 		public int phillarWidth;
-		public int phillarDensity = 100;
-		public int phillarJitter = 3;
+		[Range(0,100)]
+		public float phillarDensity = .5f;
+		public int phillarHeight = 3;
 		public float jitter = .5f;
 		public bool generate = true;
 		public bool generateCubes = true;
@@ -39,6 +47,8 @@ namespace LuminousVector
 				_wallCount++;
 			if (generateWalls)
 				_wallCount += 2;
+
+			Random.InitState(1);
 		}
 	
 		void Update ()
@@ -58,19 +68,19 @@ namespace LuminousVector
 					_cubes.RemoveRange(0, width * _wallCount);
 				}
 				//Cleanup distant phillars
-				while(_phillars.Count > maxRows * phillarWidth )
+				while(_phillars.Count > maxRows * phillarWidth * phillarHeight)
 				{
-					for(int i = 0; i < phillarWidth; i++)
+					for(int i = 0; i < phillarWidth * phillarHeight; i++)
 					{
 						if (_phillars[i] == null)
 							continue;
 						_phillars[i].SetActive(false);
 					}
-					_phillars.RemoveRange(0, phillarWidth);
+					_phillars.RemoveRange(0, phillarWidth * phillarHeight);
 				}
 
 				//Generate new cubes ahead
-				while (curPos < generatorTarget.position.z + lenght)
+				while (curPos < player.curPos.z + lenght)
 				{
 					//Generate
 					if (generateCubes)
@@ -79,7 +89,7 @@ namespace LuminousVector
 						GenerateHorizontalPlane(Vector3.zero);
 						//Ceiling
 						if(generateCeiling)
-							GenerateHorizontalPlane(new Vector3(0, phillarJitter));
+							GenerateHorizontalPlane(new Vector3(0, phillarHeight));
 						//Left Wall
 						if(generateWalls)
 							GenerateVerticalPlane(new Vector3(-(phillarWidth+1)/2, 1));
@@ -91,18 +101,39 @@ namespace LuminousVector
 					{
 						for (int x = 0; x < phillarWidth; x++)
 						{
-							if (Random.Range(0, phillarDensity) == 1)
+							for(int y = 1; y <= phillarHeight; y++)
 							{
-								_phillarPos = new Vector3(x - (phillarWidth / 2), Random.Range(1, phillarJitter), curPos);
-								_phillars.Add(phillarPool.Instantiate(_phillarPos, Quaternion.identity, parent));
+								switch (pattern)
+								{
+									case GenerationPattern.Random:
+										GenerateRandom(x, y);
+										break;
+									case GenerationPattern.Spiral:
+										GenerateSpiral(x, y);
+										break;
+								}					
 							}
-							else
-								_phillars.Add(null);
 						}
 					}
 					curPos++;
 				}
 			}
+		}
+
+		void GenerateSpiral(int x, int y)
+		{
+			
+		}
+
+		void GenerateRandom(int x, int y)
+		{
+			if (Random.value >= 1f - (phillarDensity / 100))
+			{
+				_phillarPos = new Vector3(x - (phillarWidth / 2), y, curPos);
+				_phillars.Add(phillarPool.Instantiate(_phillarPos, Quaternion.identity, parent));
+			}
+			else
+				_phillars.Add(null);
 		}
 
 		void GenerateHorizontalPlane(Vector3 offset)
@@ -127,15 +158,10 @@ namespace LuminousVector
 		void LateUpdate()
 		{
 			//Shift everything back to allow for infinite generation
-			if (generatorTarget.position.z >= loopDistance)
+			if (player.curPos.z >= loopDistance)
 			{
-				//Move Camera
-				generatorTarget.position = new Vector3
-				{
-					x = generatorTarget.position.x,
-					y = generatorTarget.position.y,
-					z = generatorTarget.position.z - loopDistance
-				};
+				player.Loop(loopDistance);
+				
 
 				//Cubes
 				foreach (GameObject c in _cubes)
@@ -181,7 +207,7 @@ namespace LuminousVector
 					p.SetParticles(_particles, pCount);
 				}
 
-				//Reference point
+				//Change Reference point
 				curPos -= loopDistance;
 
 			}

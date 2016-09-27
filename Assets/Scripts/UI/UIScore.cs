@@ -8,7 +8,13 @@ namespace LuminousVector
 {
 	public class UIScore : MonoBehaviour
 	{
+		public UITextFall textFall;
+
 		private Text _text;
+		private float _curScore;
+		private float _lastScore;
+
+
 
 		void Start()
 		{
@@ -17,7 +23,14 @@ namespace LuminousVector
 
 		void Update()
 		{
-			_text.text = Utils.Round(GameMaster.score, 100).ToString();
+			_curScore = GameMaster.score;
+			_text.text = Utils.Round(_curScore, 1).ToString();
+			if(_curScore < _lastScore)
+			{
+				textFall.Fall("-" + Utils.Round(_lastScore - _curScore, 1));
+			}
+			_lastScore = _curScore;
+
 		}		
 	}
 }
