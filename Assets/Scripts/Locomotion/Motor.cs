@@ -32,6 +32,7 @@ namespace LuminousVector
 		private float _velMulti = 1;
 		private float _curVel = 0;
 		private float _curSheild = 2;
+		private Vector3 _desiredVector;
 
 		// Use this for initialization
 		void Start()
@@ -52,12 +53,9 @@ namespace LuminousVector
 
 
 			//Apply animation
-			curPos = Vector3.Lerp(curPos, new Vector3
-			{
-				x = basePos.x + strafeVector.x,
-				y = basePos.y + strafeVector.y,
-				z = curPos.z
-			}, lerpProgress);
+			_desiredVector = basePos + strafeVector;
+			_desiredVector.z = curPos.z;
+			curPos = Vector3.Lerp(curPos, _desiredVector, lerpProgress);
 
 
 			//Apply forward motion
@@ -94,8 +92,12 @@ namespace LuminousVector
 			_transform.position = curPos;
 		}
 
-		void OnTriggerEnter(Collider c)
+		void OnCollisionEnter(Collision c)
 		{
+			Debug.Log(c.collider.tag);
+			if (c.collider.tag != "obstacle")
+				return;
+			c.gameObject.SendMessage("Die");
 			EventManager.TriggerEvent(GameEvent.PLAYER_CRASH);
 			_velMulti = 1 - velLossMulti;
 			_curSheild = ((int)_curSheild) - 1;

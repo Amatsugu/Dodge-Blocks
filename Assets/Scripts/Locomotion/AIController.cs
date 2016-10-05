@@ -17,6 +17,7 @@ namespace LuminousVector
 		private List<AINode> _nodes = new List<AINode>();
 		private AINode _selectedNode;
 		private bool _posFound = false;
+		private Vector3 _origin;
 
 
 		void Update()
@@ -35,12 +36,10 @@ namespace LuminousVector
 			{
 				for (int x = -1; x <= 1; x++)
 				{
-					_ray.origin = new Vector3()
-					{
-						x = x + _motor.basePos.x,
-						y = y + _motor.basePos.y,
-						z = _motor.curPos.z
-					};
+					_origin.x = x + _motor.basePos.x;
+					_origin.y = y + _motor.basePos.y;
+					_origin.z = _motor.curPos.z;
+					_ray.origin = _origin;
 					if (!Physics.Raycast(_ray, out _hit, range))
 					{
 						Debug.DrawLine(_ray.origin, _ray.GetPoint(range), Color.magenta);
@@ -99,12 +98,10 @@ namespace LuminousVector
 				{
 					if (strafeVector.x == x && strafeVector.y == y)
 						continue;
-					_ray.origin = new Vector3()
-					{
-						x = x + _motor.basePos.x,
-						y = y + _motor.basePos.y,
-						z = _motor.curPos.z - rearSight
-					};
+					_origin.x = x + _motor.basePos.x;
+					_origin.y = y + _motor.basePos.y;
+					_origin.z = _motor.curPos.z - rearSight;
+					_ray.origin = _origin;
 					Debug.DrawLine(_ray.origin, _ray.GetPoint(distPStrafe + rearSight), Color.red);
 					if (Physics.Raycast(_ray, distPStrafe + rearSight))
 						hazard = true;
