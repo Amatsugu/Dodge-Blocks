@@ -69,27 +69,35 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\AINode.cs" />
-    <Compile Include="Assets\Scripts\CameraUtilz\CameraShake.cs" />
-    <Compile Include="Assets\Scripts\CameraUtilz\PlayerBlurJitter.cs" />
-    <Compile Include="Assets\Scripts\CameraUtilz\PlayerCameraShake.cs" />
-    <Compile Include="Assets\Scripts\CameraUtilz\PlayerChromaJitter.cs" />
-    <Compile Include="Assets\Scripts\CameraUtilz\PlayerEffect.cs" />
-    <Compile Include="Assets\Scripts\CubeDie.cs" />
+    <Compile Include="Assets\Scripts\Camera\CameraShake.cs" />
+    <Compile Include="Assets\Scripts\Camera\PlayerBlurJitter.cs" />
+    <Compile Include="Assets\Scripts\Camera\PlayerCameraShake.cs" />
+    <Compile Include="Assets\Scripts\Camera\PlayerChromaJitter.cs" />
+    <Compile Include="Assets\Scripts\Camera\PlayerEffect.cs" />
+    <Compile Include="Assets\Scripts\Effects\CubeDie.cs" />
+    <Compile Include="Assets\Scripts\Effects\ShatterCube.cs" />
     <Compile Include="Assets\Scripts\Enums.cs" />
     <Compile Include="Assets\Scripts\EventManager.cs" />
     <Compile Include="Assets\Scripts\GameMaster.cs" />
-    <Compile Include="Assets\Scripts\Generator.cs" />
+    <Compile Include="Assets\Scripts\Level Generation\Execeptions\InvalidSliceExeception.cs" />
+    <Compile Include="Assets\Scripts\Level Generation\Execeptions\SliceZoneMismatchExeception.cs" />
+    <Compile Include="Assets\Scripts\Level Generation\Generator.cs" />
+    <Compile Include="Assets\Scripts\Level Generation\Level.cs" />
+    <Compile Include="Assets\Scripts\Level Generation\LevelObject.cs" />
+    <Compile Include="Assets\Scripts\Level Generation\Slice.cs" />
+    <Compile Include="Assets\Scripts\Level Generation\Zone.cs" />
     <Compile Include="Assets\Scripts\Locomotion\AIController.cs" />
+    <Compile Include="Assets\Scripts\Locomotion\AINode.cs" />
     <Compile Include="Assets\Scripts\Locomotion\ControlMethodSwitch.cs" />
     <Compile Include="Assets\Scripts\Locomotion\Controller.cs" />
     <Compile Include="Assets\Scripts\Locomotion\Motor.cs" />
     <Compile Include="Assets\Scripts\Locomotion\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Locomotion\PlayerControllerAlt.cs" />
-    <Compile Include="Assets\Scripts\ObjectPooler.cs" />
-    <Compile Include="Assets\Scripts\ObjectPoolerWorld.cs" />
-    <Compile Include="Assets\Scripts\Tools\GenerateShatterCube.cs" />
+    <Compile Include="Assets\Scripts\ObjectManagement\ObjectPoolManager.cs" />
+    <Compile Include="Assets\Scripts\ObjectManagement\ObjectPoolerWorld.cs" />
+    <Compile Include="Assets\Scripts\ObjectManagement\PooledGameObject.cs" />
     <Compile Include="Assets\Scripts\UI\UIFlash.cs" />
+    <Compile Include="Assets\Scripts\UI\UIFrameCounter.cs" />
     <Compile Include="Assets\Scripts\UI\UIList.cs" />
     <Compile Include="Assets\Scripts\UI\UIScore.cs" />
     <Compile Include="Assets\Scripts\UI\UISheild.cs" />

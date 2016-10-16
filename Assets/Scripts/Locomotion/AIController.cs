@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace LuminousVector
 {
@@ -18,9 +19,10 @@ namespace LuminousVector
 		private AINode _selectedNode;
 		private bool _posFound = false;
 		private Vector3 _origin;
+		private Vector3 _curPos = new Vector3();
 
 
-		void Update()
+		protected override void Control()
 		{
 			_nodes.Clear();
 			_selectedNode = null;
@@ -40,13 +42,15 @@ namespace LuminousVector
 					_origin.y = y + _motor.basePos.y;
 					_origin.z = _motor.curPos.z;
 					_ray.origin = _origin;
+					_curPos.x = x;
+					_curPos.y = y;
 					if (!Physics.Raycast(_ray, out _hit, range))
 					{
 						Debug.DrawLine(_ray.origin, _ray.GetPoint(range), Color.magenta);
 						_nodes.Add(new AINode()
 						{
 							distance = float.PositiveInfinity,
-							position = new Vector3(x,y)
+							position = _curPos
 						});
 					}else
 					{
@@ -54,7 +58,7 @@ namespace LuminousVector
 						_nodes.Add(new AINode()
 						{
 							distance = _hit.distance,
-							position = new Vector3(x,y)
+							position = _curPos
 						});
 					}
 				}

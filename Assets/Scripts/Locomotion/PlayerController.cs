@@ -7,7 +7,7 @@ namespace LuminousVector
 	public class PlayerController : Controller
 	{
 		// Update is called once per frame
-		void Update()
+		protected override void Control()
 		{
 			//Vertical
 			if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))

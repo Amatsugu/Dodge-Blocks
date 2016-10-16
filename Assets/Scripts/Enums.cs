@@ -6,6 +6,8 @@ namespace LuminousVector
 		GAME_UNPAUSED,
 		GAME_READY,
 		DUMMY_EVENT,
-		PLAYER_CRASH
+		PLAYER_CRASH,
+		PLAYER_DIE,
+		GENERATOR_LOOP
 	}
 }

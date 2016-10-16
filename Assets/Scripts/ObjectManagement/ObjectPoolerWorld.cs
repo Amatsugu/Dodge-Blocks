@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LuminousVector
 {
@@ -10,21 +11,28 @@ namespace LuminousVector
 		public int poolSize = 20;
 		public bool willGrow = false;
 
-		public List<GameObject> _objectPool;
+		private List<PooledGameObject> _objectPool = new List<PooledGameObject>();
 
 		void Start()
 		{
-			_objectPool = new List<GameObject>();
 			for (int i = 0; i < poolSize; i++)
 			{
 				GameObject obj = Instantiate(pooledObject) as GameObject;
 				obj.SetActive(false);
 				obj.transform.parent = transform;
-				_objectPool.Add(obj);
+				_objectPool.Add(new PooledGameObject(this, obj));
 			}
 		}
 
-		public GameObject GetPooledObject()
+		public PooledGameObject FindPooledGameObject(GameObject gameObject)
+		{
+			foreach (PooledGameObject g in _objectPool)
+				if(g.gameObject.Equals(gameObject))
+					return g;
+			return null;
+		}
+
+		public PooledGameObject GetPooledObject()
 		{
 			for (int i = 0; i < _objectPool.Count; i++)
 			{
@@ -35,18 +43,19 @@ namespace LuminousVector
 			}
 			if (willGrow)
 			{
-				GameObject obj = Instantiate(pooledObject) as GameObject;
+				PooledGameObject obj = new PooledGameObject(this, Instantiate(pooledObject) as GameObject);
 				_objectPool.Add(obj);
 				obj.transform.parent = transform;
+				poolSize++;
 				return obj;
 			}
 
 			return null;
 		}
 
-		public GameObject Instantiate(Vector3 position, Quaternion rotation, Transform parent = null)
+		public PooledGameObject Instantiate(Vector3 position, Quaternion rotation, Transform parent = null)
 		{
-			GameObject g = GetPooledObject();
+			PooledGameObject g = GetPooledObject();
 			if (g == null)
 				return g;
 			g.transform.position = position;
@@ -54,6 +63,13 @@ namespace LuminousVector
 			g.transform.parent = parent;
 			g.SetActive(true);
 			return g;
+		}
+
+		public ObjectPoolerWorld Destroy(GameObject g)
+		{
+			g.transform.parent = transform;
+			g.SetActive(false);
+			return this;
 		}
 	}
 }

@@ -16,14 +16,26 @@ Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Dat
 Loading C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-- Completed reload, in  0.047 seconds
+- Completed reload, in  0.050 seconds
 Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\System.dll (this message is harmless)
 desktop: 1920x1080 60Hz; virtual: 3286x1080 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.806714 ms
+UnloadTime: 68.365883 ms
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 3a10 -> priority: 1 
-  Thread -> id: 28e4 -> priority: 1 
+  Thread -> id: 4af4 -> priority: 1 
+  Thread -> id: 4af8 -> priority: 1 
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 40.840328 ms
+
+Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 492.
+Total: 12.660158 ms (FindLiveObjects: 0.038716 ms CreateObjectMapping: 0.012641 ms MarkObjects: 12.389935 ms  DeleteObjects: 0.012246 ms)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 10.685243 ms
+
+Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 492.
+Total: 1.595655 ms (FindLiveObjects: 0.150518 ms CreateObjectMapping: 0.066765 ms MarkObjects: 1.354272 ms  DeleteObjects: 0.021728 ms)
+

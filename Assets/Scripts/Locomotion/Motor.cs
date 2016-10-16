@@ -29,15 +29,20 @@ namespace LuminousVector
 		public float curVel { get { return _curVel; } }
 		
 		private Transform _transform;
+		private Rigidbody _rigidBody;
 		private float _velMulti = 1;
 		private float _curVel = 0;
+		[SerializeField]
 		private float _curSheild = 2;
 		private Vector3 _desiredVector;
+		[SerializeField]
+		private bool _isDead = false;
 
 		// Use this for initialization
 		void Start()
 		{
 			_transform = transform;
+			_rigidBody = GetComponent<Rigidbody>();
 			curPos = basePos = _transform.position;
 			_curVel = startSpeed;
 		}
@@ -45,6 +50,8 @@ namespace LuminousVector
 		// Update is called once per frame
 		void LateUpdate()
 		{
+			if (_isDead)
+				return;
 			//Progess animation
 			if (lerpProgress < 1)
 				lerpProgress += strafeSpeed * Time.deltaTime;
@@ -92,12 +99,14 @@ namespace LuminousVector
 			_transform.position = curPos;
 		}
 
-		void OnCollisionEnter(Collision c)
+		void OnTriggerEnter(Collider c)
 		{
-			Debug.Log(c.collider.tag);
-			if (c.collider.tag != "obstacle")
+			if (c.tag != "obstacle")
 				return;
 			c.gameObject.SendMessage("Die");
+			if (_isDead)
+				return;
+			//c.gameObject.SetActive(false);
 			EventManager.TriggerEvent(GameEvent.PLAYER_CRASH);
 			_velMulti = 1 - velLossMulti;
 			_curSheild = ((int)_curSheild) - 1;
@@ -108,6 +117,11 @@ namespace LuminousVector
 
 		void Die()
 		{
+			GameMaster.playerDead = _isDead = true;
+			_rigidBody.isKinematic = false;
+			_rigidBody.useGravity = true;
+			_rigidBody.velocity = _transform.forward * _curVel;
+			EventManager.TriggerEvent(GameEvent.PLAYER_DIE);
 
 		}
 	}

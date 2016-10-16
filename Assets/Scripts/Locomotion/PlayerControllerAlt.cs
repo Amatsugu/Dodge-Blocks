@@ -7,7 +7,7 @@ namespace LuminousVector
 	public class PlayerControllerAlt : Controller
 	{
 		// Update is called once per frame
-		void Update()
+		protected override void Control()
 		{
 			//Vertical
 			if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))

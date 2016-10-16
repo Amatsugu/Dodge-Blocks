@@ -7,6 +7,7 @@ namespace LuminousVector
 {
 	public class EventManager : MonoBehaviour
 	{
+		public bool persist = false;
 		private Dictionary<GameEvent, UnityEvent> eventDictionary;
 
 		private static EventManager EVENT_MANAGER;
@@ -39,6 +40,8 @@ namespace LuminousVector
 
 		void Start()
 		{
+			if (!persist)
+				return;
 			DontDestroyOnLoad(gameObject);
 			if (FindObjectOfType<EventManager>() as EventManager != this)
 				Destroy(gameObject);

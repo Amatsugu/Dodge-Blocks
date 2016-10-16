@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 namespace LuminousVector
 {
-	public class Controller : MonoBehaviour
+	public abstract class Controller : MonoBehaviour
 	{
 
 		protected Vector3 strafeVector = new Vector3();
@@ -15,5 +16,17 @@ namespace LuminousVector
 		{
 			_motor = GetComponent<Motor>();
 		}
+
+		void Update()
+		{
+			if(GameMaster.playerDead)
+			{
+				if (Input.GetKeyUp(KeyCode.Space))
+					SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+			}else
+				Control();
+		}
+
+		protected abstract void Control();
 	}
 }
