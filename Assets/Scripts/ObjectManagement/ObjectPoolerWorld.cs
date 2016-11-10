@@ -58,9 +58,9 @@ namespace LuminousVector
 			PooledGameObject g = GetPooledObject();
 			if (g == null)
 				return g;
-			g.transform.position = position;
-			g.transform.rotation = rotation;
 			g.transform.parent = parent;
+			g.transform.localPosition = position;
+			g.transform.localRotation = rotation;
 			g.SetActive(true);
 			return g;
 		}

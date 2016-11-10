@@ -48,7 +48,9 @@ namespace LuminousVector.LevelGenerator
 				{
 					for(int x = 0; x < 3; x++)
 					{
-						if (rand.Next(density) != 1)
+						if (x == 2 && y == 2)
+							voxels.Add(new Voxel(poolID));
+						else if (rand.Next(density) != 1)
 							voxels.Add(null);
 						else
 							voxels.Add(new Voxel(poolID));
@@ -63,13 +65,8 @@ namespace LuminousVector.LevelGenerator
 
 		RandomGenLevel GenerateTurn()
 		{
-			TurnDir dir = (TurnDir)rand.Next(3);
-			int len = 0;
-			if (dir == TurnDir.Down || dir == TurnDir.Up)
-				len = 4;
-			else
-				len = 3;
-			TurnZone zone = new TurnZone(3, 3, len, dir);
+			TurnDir dir = (TurnDir)rand.Next(4);
+			TurnZone zone = new TurnZone(3, 3, 3, dir);
 			lastTurn = 0;
 			AddZone(zone);
 			return this;

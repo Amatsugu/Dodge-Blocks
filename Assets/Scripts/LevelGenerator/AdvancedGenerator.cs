@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 namespace LuminousVector.LevelGenerator
@@ -7,46 +8,21 @@ namespace LuminousVector.LevelGenerator
 	{
 
 		public float planeJittter = .1f;
+		public int zoneCount = 100;
 		public bool rebuild = true;
 
 		private ObjectPoolerWorld _floorVoxelPool;
 		private List<PooledGameObject> _floorVoxels;
 		private List<PooledGameObject> _worldVoxels;
+		private List<GameObject> _worldZones;
 		private Vector3 _curPos;
-		private Vector3 _curDir = new Vector3(0, 0, 1);
-		private Vector3 _curUp = new Vector3(0, 1, 0);
-		private bool _inverted
-		{
-			get
-			{
-				if (_curUp == Vector3.up && (_curDir == Vector3.left || _curDir == Vector3.right)) //UP Left/Right 
-					return false;
-				else if (_curUp == Vector3.down && (_curDir == Vector3.left || _curDir == Vector3.right)) //DOWN Left/Right
-					return true;
-				else if (_curUp == Vector3.up && (_curDir == Vector3.forward || _curDir == Vector3.back)) //UP forward/back
-					return false;
-				else if (_curUp == Vector3.down && (_curDir == Vector3.forward || _curDir == Vector3.back)) //DOWN forward/back
-					return true;
-				else if (_curUp == Vector3.left && (_curDir == Vector3.forward || _curDir == Vector3.back)) //LEFT forward/Back
-					return true;
-				else if (_curUp == Vector3.right && (_curDir == Vector3.forward || _curDir == Vector3.back)) //RIGHT forward/Back
-					return false;
-				else if (_curUp == Vector3.left && (_curDir == Vector3.up || _curDir == Vector3.down)) //LEFT up/down
-					return true;
-				else if (_curUp == Vector3.right && (_curDir == Vector3.up || _curDir == Vector3.down)) //RIGHT up/down
-					return false;
-				else if (_curUp == Vector3.forward && (_curDir == Vector3.up || _curDir == Vector3.down)) //FORWARD up/down
-					return false;
-				else if (_curUp == Vector3.back && (_curDir == Vector3.up || _curDir == Vector3.down)) //BACK up/down
-					return true;
-				else if (_curUp == Vector3.forward && (_curDir == Vector3.right || _curDir == Vector3.left)) //FORWARD right/left
-					return false;
-				else if (_curUp == Vector3.back && (_curDir == Vector3.right || _curDir == Vector3.left)) //BACK right/left
-					return true;
+		private Vector3 _curDir;
+		private Vector3 _curUp;
+		private List<GenPoints> _genPoints = new List<GenPoints>();
 
-				return false; //Default
-			}
-		}
+		private DateTime _startTime;
+		private int t = 0;
+
 		private PlaneAxis _curAxis
 		{
 			get
@@ -70,10 +46,14 @@ namespace LuminousVector.LevelGenerator
 
 		void Start()
 		{
+			_startTime = DateTime.Now;
+			_curDir = Vector3.forward;
+			_curUp = Vector3.up;
 			_floorVoxelPool = ObjectPoolManager.GetPool("FloorVoxelPool");
 			_floorVoxels = new List<PooledGameObject>();
 			_curPos = Vector3.zero;
 			_worldVoxels = new List<PooledGameObject>();
+			_worldZones = new List<GameObject>();
 			_curLevel = new RandomGenLevel("Random Level")
 			{
 				length = new Uitls.ValueRange(10, 30),
@@ -83,50 +63,34 @@ namespace LuminousVector.LevelGenerator
 				density = 10,
 				turnFequency = new Uitls.ValueRange(1, 4)
 			}.GenerateZone();
-			AlignPos();
+			//AlignPos();
 		}
 
-		void AlignPos()
-		{
-			switch (_curAxis)
-			{
-				case PlaneAxis.XZ:
-					_curPos.x -= (int)_curLevel.currentZone.size.x / 2;
-					break;
-				case PlaneAxis.XY:
-					_curPos.x -= (int)_curLevel.currentZone.size.x / 2;
-					break;
-				case PlaneAxis.ZX:
-					_curPos.z -= (int)_curLevel.currentZone.size.x / 2;
-					break;
-				case PlaneAxis.ZY:
-					_curPos.z -= (int)_curLevel.currentZone.size.x / 2;
-					break;
-				case PlaneAxis.YX:
-					_curPos.y -= (int)_curLevel.currentZone.size.x / 2;
-					break;
-				case PlaneAxis.YZ:
-					_curPos.y -= (int)_curLevel.currentZone.size.x / 2;
-					break;
-				default:
-					return;
-			}
-		}
 
 		void Update()
 		{
+			for(int i = 1; i < _genPoints.Count; i++)
+			{
+				GenPoints pos = _genPoints[i];
+				Debug.DrawLine(pos.pos, pos.pos + pos.up * 3, pos.col);
+				Debug.DrawLine(_genPoints[i - 1].pos, pos.pos, Color.cyan);
+			}
 			if (!rebuild)
 				return;
+			_genPoints.Clear();
 			foreach (PooledGameObject g in _floorVoxels)
 				g.Destroy();
 			foreach (PooledGameObject g in _worldVoxels)
 				g.Destroy();
+			foreach (GameObject g in _worldZones)
+				Destroy(g);
 			Start();
-			for(int i = 0; i < 50; i++)
+			for(int i = 0; i < zoneCount; i++)
 			{
 				BuildZone(_curLevel.NextZone());
 			}
 			rebuild = false;
+			Debug.Log("Generated " + zoneCount + " in " + (DateTime.Now -_startTime).TotalMilliseconds + "ms");
 		}
 
 		//Zone Builder
@@ -137,144 +101,180 @@ namespace LuminousVector.LevelGenerator
 				BuildTurnZone((TurnZone)zone);
 				return;
 			}
+			GameObject curZone = new GameObject();
+			curZone.transform.position = _curPos;
+			curZone.transform.rotation = Quaternion.LookRotation(_curDir, _curUp);
+			curZone.name = "Zone " + _worldZones.Count;
+			curZone.transform.parent = transform;
+			_worldZones.Add(curZone);
 			for (int i = 0; i < zone.size.z; i++)
 			{
-				BuildZoneSlice(zone.NextSlice(), _curPos, _curAxis, _inverted);
-				BuildFloorSlice((int)zone.size.x, _curPos, _curAxis, _inverted);
-				_curPos += _curDir;
+
+				BuildZoneSlice(zone.NextSlice(), i, _curAxis);
+				BuildFloorSlice((int)zone.size.x, i, _curAxis);
 			}
+			_curPos += _curDir * (zone.size.z - 1);
+			_genPoints.Add(new GenPoints(_curPos, _curUp));
 		}
 
 
 		//Zone Slice Builder
-		void BuildZoneSlice(Slice slice, Vector3 basePos, PlaneAxis axis, bool inverted = false)
+		void BuildZoneSlice(Slice slice,float curPos, PlaneAxis axis)
 		{
 			Vector3 pos;
 			Voxel curVoxel;
-			for(int y = 0; y < slice.size.y; y++)
+			float hwidth = _curLevel.currentZone.size.x/2;
+			for (int y = 0; y < slice.size.y; y++)
 			{
-				for(int x = 0; x < slice.size.x; x++)
+				for (int x = 0; x < slice.size.x; x++)
 				{
 					if ((curVoxel = slice.Next()) == null)
 						continue;
-					int x1 = x + (int)slice.size.x/2, 
-						y1 = (inverted) ? (int)_curLevel.currentZone.size.y - y : y;
-					switch (axis)
-					{
-						case PlaneAxis.XZ:
-							pos = new Vector3(x1, y1, 0);
-							break;
-						case PlaneAxis.XY:
-							pos = new Vector3(x1, 0, y1);
-							break;
-						case PlaneAxis.ZX:
-							pos = new Vector3(0, y1, x1);
-							break;
-						case PlaneAxis.ZY:
-							pos = new Vector3(y1, 0, x1);
-							break;
-						case PlaneAxis.YX:
-							pos = new Vector3(0, x1, y1);
-							break;
-						case PlaneAxis.YZ:
-							pos = new Vector3(y1, x1, 0);
-							break;
-						default:
-							return;
-					}
-					pos += basePos;
-					_worldVoxels.Add(ObjectPoolManager.GetPool(curVoxel.poolID).Instantiate(pos, Quaternion.identity, transform));
+
+					float x1 = x + (int)(slice.size.x / -2);
+					pos = new Vector3(x1, y, curPos);
+					_worldVoxels.Add(ObjectPoolManager.GetPool(curVoxel.poolID).Instantiate(pos, Quaternion.identity, _worldZones[_worldZones.Count-1].transform));
 				}
 			}
 		}
-
 
 		//Turn Zone Builder
 		void BuildTurnZone(TurnZone zone)
 		{
-
+			Debug.Log(zone.turnDir + " (" + (++t) + ")");
+			GameObject turn = new GameObject();
+			turn.name = "turn " + t;
+			turn.transform.position = _curPos;
+			turn.transform.parent = transform;
 			RotationAxis axis;
+			float angle = Mathf.PI / 2;
 			switch(zone.turnDir)
 			{
 				case TurnDir.Up:
+					_curPos += _curDir* (zone.size.z);
+					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.gray));
 					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.XY)
+					{
 						axis = RotationAxis.X;
-					else if (_curAxis == PlaneAxis.YX || _curAxis == PlaneAxis.YZ)
-						axis = RotationAxis.Y;
-					else
-						axis = RotationAxis.Z;
-					_curDir = Utils.Rotate(_curDir, Mathf.PI / -2f, axis);
-					_curUp = Utils.Rotate(_curUp, Mathf.PI / -2f, axis);
+						if (_curDir == Vector3.forward && _curUp == Vector3.down)
+							angle *= -1;
+						if (_curDir == Vector3.up && _curUp == Vector3.forward)
+							angle *= -1;
+						if (_curDir == Vector3.down && _curUp == Vector3.back)
+							angle *= -1;
+						if (_curDir == Vector3.back && _curUp == Vector3.up)
+							angle *= -1;
 
+					}
+					else if (_curAxis == PlaneAxis.YX || _curAxis == PlaneAxis.YZ)
+					{
+						axis = RotationAxis.Y;
+						if (_curDir == Vector3.forward && _curUp == Vector3.right)
+							angle *= -1;
+						if (_curDir == Vector3.left && _curUp == Vector3.forward)
+							angle *= -1;
+					}
+					else
+					{
+						axis = RotationAxis.Z;
+						if (_curDir == Vector3.down && _curUp == Vector3.right)
+							angle *= -1;
+					}
+					_curDir = Utils.Rotate(_curDir, -angle, axis);
+					_curUp = Utils.Rotate(_curUp, -angle, axis);
+					_curPos += _curDir * (zone.size.y);
 					break;
 				case TurnDir.Left:
+					_curPos += _curDir * (zone.size.z);
+					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.black));
 					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.ZX)
+					{
 						axis = RotationAxis.Y;
+						if (_curDir == Vector3.up && _curUp == Vector3.back)
+							angle *= -1;
+					}
 					else if (_curAxis == PlaneAxis.XY || _curAxis == PlaneAxis.YX)
+					{
 						axis = RotationAxis.Z;
-					else //if (_curAxis == PlaneAxis.YZ || _curAxis == PlaneAxis.ZY)
+
+					}
+					else
+					{
 						axis = RotationAxis.X;
-					_curDir = Utils.Rotate(_curDir, Mathf.PI / -2f, axis);
-					_curUp = Utils.Rotate(_curUp, Mathf.PI / -2f, axis);
+
+					}
+					_curDir = Utils.Rotate(_curDir, -angle, axis);
+					_curUp = Utils.Rotate(_curUp, -angle, axis);
+					_curPos += _curDir * (zone.size.x);
 					break;
 				case TurnDir.Right:
+					_curPos += _curDir * (zone.size.z);
+					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.blue));
 					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.ZX)
+					{
 						axis = RotationAxis.Y;
+						if (_curDir == Vector3.down && _curUp == Vector3.up)
+							angle *= -1;
+					}
 					else if (_curAxis == PlaneAxis.XY || _curAxis == PlaneAxis.YX)
+					{
 						axis = RotationAxis.Z;
-					else //if (_curAxis == PlaneAxis.YZ || _curAxis == PlaneAxis.ZY)
+						
+					}
+					else
+					{
 						axis = RotationAxis.X;
-					_curDir = Utils.Rotate(_curDir, Mathf.PI / 2f, axis);
-					_curUp = Utils.Rotate(_curUp, Mathf.PI / 2f, axis);
+						
+					}
+					_curDir = Utils.Rotate(_curDir, angle, axis);
+					_curUp = Utils.Rotate(_curUp, angle, axis);
+					_curPos += _curDir * (zone.size.x);
 					break;
 				case TurnDir.Down:
+					_curPos += _curDir * (zone.size.z-1);
+					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.yellow));
 					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.XY)
+					{
 						axis = RotationAxis.X;
+						
+					}
 					else if (_curAxis == PlaneAxis.YX || _curAxis == PlaneAxis.YZ)
+					{
 						axis = RotationAxis.Y;
+						if (_curDir == Vector3.left && _curUp == Vector3.forward)
+							angle *= -1;
+						if (_curDir == Vector3.right && _curUp == Vector3.back)
+							angle *= -1;
+						if (_curDir == Vector3.back && _curUp == Vector3.left)
+							angle *= -1;
+						if (_curDir == Vector3.forward && _curUp == Vector3.right)
+							angle *= -1;
+					}
 					else
+					{
 						axis = RotationAxis.Z;
-					_curDir = Utils.Rotate(_curDir, Mathf.PI / 2f, axis);
-					_curUp = Utils.Rotate(_curUp, Mathf.PI / 2f, axis);
+						if (_curDir == Vector3.right && _curUp == Vector3.up)
+							angle *= -1;
+					}
+					_curDir = Utils.Rotate(_curDir, angle, axis);
+					_curUp = Utils.Rotate(_curUp, angle, axis);
+					_curPos += _curDir * (zone.size.y -1);
 					break;
 			}
-			_curPos += _curDir * zone.size.z;
-			//AlignPos();
+			_genPoints.Add(new GenPoints(_curPos, _curUp));
 		}
 
 		//Floor Builder
-		void BuildFloorSlice(int width, Vector3 basePos, PlaneAxis axis, bool inverted = false)
+		void BuildFloorSlice(int width, float curPos, PlaneAxis axis)
 		{
 			Vector3 pos;
 			for (float x = 0; x < width; x++)
 			{
-				float jitterValue = Random.Range(-planeJittter, planeJittter) - 1;
-				jitterValue = ((inverted) ? _curLevel.currentZone.size.y - jitterValue : jitterValue);
-				switch (axis)
-				{
-					case PlaneAxis.XZ:
-						pos = new Vector3(x, jitterValue, 0);
-						break;
-					case PlaneAxis.XY:
-						pos = new Vector3(x, 0, jitterValue);
-						break;
-					case PlaneAxis.ZX:
-						pos = new Vector3(0, jitterValue, x);
-						break;
-					case PlaneAxis.ZY:
-						pos = new Vector3(jitterValue, 0, x);
-						break;
-					case PlaneAxis.YX:
-						pos = new Vector3(0, x, jitterValue);
-						break;
-					case PlaneAxis.YZ:
-						pos = new Vector3(jitterValue, x, 0);
-						break;
-					default:
-						return;
-				}
-				pos += basePos;
-				_floorVoxels.Add(_floorVoxelPool.Instantiate(pos, Quaternion.identity, transform));
+				float jitterValue = UnityEngine.Random.Range(-planeJittter, planeJittter) - 1;
+				float x1 = x + (width / -2f);
+				x1 += .5f;
+				pos = new Vector3(x1, jitterValue, curPos);
+				_floorVoxels.Add(_floorVoxelPool.Instantiate(pos, Quaternion.identity, _worldZones[_worldZones.Count - 1].transform));
 			}
 		}
 	}

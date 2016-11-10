@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\LevelGenerator\AdvancedGenerator.cs" />
     <Compile Include="Assets\Scripts\LevelGenerator\Execeptions\InvalidSliceExeception.cs" />
     <Compile Include="Assets\Scripts\LevelGenerator\Execeptions\SliceZoneMismatchExeception.cs" />
+    <Compile Include="Assets\Scripts\LevelGenerator\GenPoints.cs" />
     <Compile Include="Assets\Scripts\LevelGenerator\Generator.cs" />
     <Compile Include="Assets\Scripts\LevelGenerator\Level.cs" />
     <Compile Include="Assets\Scripts\LevelGenerator\LevelObject.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Assets\Scripts\ObjectManagement\ObjectPoolManager.cs" />
     <Compile Include="Assets\Scripts\ObjectManagement\ObjectPoolerWorld.cs" />
     <Compile Include="Assets\Scripts\ObjectManagement\PooledGameObject.cs" />
+    <Compile Include="Assets\Scripts\Test.cs" />
     <Compile Include="Assets\Scripts\UI\Effects\UIBlurBehind.cs" />
     <Compile Include="Assets\Scripts\UI\Effects\UIBlurBehindController.cs" />
     <Compile Include="Assets\Scripts\UI\UIFlash.cs" />

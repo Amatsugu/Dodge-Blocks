@@ -2,15 +2,10 @@ using UnityEngine;
 
 namespace LuminousVector.Uitls
 {
-	public class ValueRange
+	public struct ValueRange
 	{
 		public float min { get; set; }
 		public float max { get; set; }
-
-		public ValueRange()
-		{
-			
-		}
 
 		public ValueRange(float min, float max)
 		{
