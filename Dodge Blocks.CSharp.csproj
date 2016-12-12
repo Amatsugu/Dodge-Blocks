@@ -77,6 +77,7 @@
     <Compile Include="Assets\Scripts\Camera\PlayerCameraShake.cs" />
     <Compile Include="Assets\Scripts\Camera\PlayerChromaJitter.cs" />
     <Compile Include="Assets\Scripts\Camera\PlayerEffect.cs" />
+    <Compile Include="Assets\Scripts\Camera\TrackFollow.cs" />
     <Compile Include="Assets\Scripts\Effects\CubeDie.cs" />
     <Compile Include="Assets\Scripts\Effects\ShatterCube.cs" />
     <Compile Include="Assets\Scripts\Enums.cs" />

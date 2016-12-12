@@ -18,7 +18,8 @@ namespace LuminousVector.LevelGenerator
 		private Vector3 _curPos;
 		private Vector3 _curDir;
 		private Vector3 _curUp;
-		private List<GenPoints> _genPoints = new List<GenPoints>();
+		[HideInInspector]
+		public List<GenPoints> _genPoints = new List<GenPoints>();
 
 		private DateTime _startTime;
 		private int t = 0;
@@ -54,7 +55,7 @@ namespace LuminousVector.LevelGenerator
 			_curPos = Vector3.zero;
 			_worldVoxels = new List<PooledGameObject>();
 			_worldZones = new List<GameObject>();
-			_curLevel = new RandomGenLevel("Random Level")
+			_curLevel = new RandomGenLevel("Random Level", 500)
 			{
 				length = new Uitls.ValueRange(10, 30),
 				width = 5,
@@ -114,7 +115,7 @@ namespace LuminousVector.LevelGenerator
 				BuildFloorSlice((int)zone.size.x, i, _curAxis);
 			}
 			_curPos += _curDir * (zone.size.z - 1);
-			_genPoints.Add(new GenPoints(_curPos, _curUp));
+			_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp));
 		}
 
 
@@ -141,7 +142,7 @@ namespace LuminousVector.LevelGenerator
 		//Turn Zone Builder
 		void BuildTurnZone(TurnZone zone)
 		{
-			Debug.Log(zone.turnDir + " (" + (++t) + ")");
+			//Debug.Log(zone.turnDir + " (" + (++t) + ")");
 			GameObject turn = new GameObject();
 			turn.name = "turn " + t;
 			turn.transform.position = _curPos;
@@ -150,19 +151,19 @@ namespace LuminousVector.LevelGenerator
 			float angle = Mathf.PI / 2;
 			switch(zone.turnDir)
 			{
-				case TurnDir.Up:
+				case TurnDir.Up: //UP
 					_curPos += _curDir* (zone.size.z);
-					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.gray));
+					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.gray));
 					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.XY)
 					{
 						axis = RotationAxis.X;
-						if (_curDir == Vector3.forward && _curUp == Vector3.down)
+						if (_curUp == Vector3.down && _curDir != Vector3.back)
+							angle *= -1;
+						if (_curDir == Vector3.back && _curUp == Vector3.up)
 							angle *= -1;
 						if (_curDir == Vector3.up && _curUp == Vector3.forward)
 							angle *= -1;
 						if (_curDir == Vector3.down && _curUp == Vector3.back)
-							angle *= -1;
-						if (_curDir == Vector3.back && _curUp == Vector3.up)
 							angle *= -1;
 
 					}
@@ -173,70 +174,30 @@ namespace LuminousVector.LevelGenerator
 							angle *= -1;
 						if (_curDir == Vector3.left && _curUp == Vector3.forward)
 							angle *= -1;
+						if (_curDir == Vector3.right && _curUp == Vector3.back)
+							angle *= -1;
 					}
 					else
 					{
 						axis = RotationAxis.Z;
 						if (_curDir == Vector3.down && _curUp == Vector3.right)
 							angle *= -1;
+						if (_curDir == Vector3.left && _curUp == Vector3.down)
+							angle *= -1;
 					}
 					_curDir = Utils.Rotate(_curDir, -angle, axis);
 					_curUp = Utils.Rotate(_curUp, -angle, axis);
 					_curPos += _curDir * (zone.size.y);
 					break;
-				case TurnDir.Left:
-					_curPos += _curDir * (zone.size.z);
-					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.black));
-					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.ZX)
-					{
-						axis = RotationAxis.Y;
-						if (_curDir == Vector3.up && _curUp == Vector3.back)
-							angle *= -1;
-					}
-					else if (_curAxis == PlaneAxis.XY || _curAxis == PlaneAxis.YX)
-					{
-						axis = RotationAxis.Z;
-
-					}
-					else
-					{
-						axis = RotationAxis.X;
-
-					}
-					_curDir = Utils.Rotate(_curDir, -angle, axis);
-					_curUp = Utils.Rotate(_curUp, -angle, axis);
-					_curPos += _curDir * (zone.size.x);
-					break;
-				case TurnDir.Right:
-					_curPos += _curDir * (zone.size.z);
-					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.blue));
-					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.ZX)
-					{
-						axis = RotationAxis.Y;
-						if (_curDir == Vector3.down && _curUp == Vector3.up)
-							angle *= -1;
-					}
-					else if (_curAxis == PlaneAxis.XY || _curAxis == PlaneAxis.YX)
-					{
-						axis = RotationAxis.Z;
-						
-					}
-					else
-					{
-						axis = RotationAxis.X;
-						
-					}
-					_curDir = Utils.Rotate(_curDir, angle, axis);
-					_curUp = Utils.Rotate(_curUp, angle, axis);
-					_curPos += _curDir * (zone.size.x);
-					break;
-				case TurnDir.Down:
-					_curPos += _curDir * (zone.size.z-1);
-					_genPoints.Add(new GenPoints(_curPos, _curUp, Color.yellow));
+				case TurnDir.Down: //DOWN
+					_curPos += _curDir * (zone.size.z - 1);
+					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.yellow));
 					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.XY)
 					{
 						axis = RotationAxis.X;
-						
+						if (_curUp == Vector3.down)
+							angle *= -1;
+
 					}
 					else if (_curAxis == PlaneAxis.YX || _curAxis == PlaneAxis.YZ)
 					{
@@ -255,13 +216,76 @@ namespace LuminousVector.LevelGenerator
 						axis = RotationAxis.Z;
 						if (_curDir == Vector3.right && _curUp == Vector3.up)
 							angle *= -1;
+						if (_curDir == Vector3.left && _curUp == Vector3.down)
+							angle *= -1;
 					}
 					_curDir = Utils.Rotate(_curDir, angle, axis);
 					_curUp = Utils.Rotate(_curUp, angle, axis);
-					_curPos += _curDir * (zone.size.y -1);
+					_curPos += _curDir * (zone.size.y - 1);
 					break;
+				case TurnDir.Left: //LEFT
+					_curPos += _curDir * (zone.size.z);
+					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.black));
+					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.ZX)
+					{
+						axis = RotationAxis.Y;
+						if (_curUp == Vector3.down)
+							angle *= -1;
+					}
+					else if (_curAxis == PlaneAxis.XY || _curAxis == PlaneAxis.YX)
+					{
+						axis = RotationAxis.Z;
+						if (_curDir == Vector3.left && _curUp == Vector3.back)
+							angle *= -1;
+					}
+					else
+					{
+						axis = RotationAxis.X;
+						if (_curDir == Vector3.down && _curUp == Vector3.left)
+							angle *= -1;
+						if (_curDir == Vector3.back && _curUp == Vector3.left)
+							angle *= -1;
+						if (_curDir == Vector3.up && _curUp == Vector3.left)
+							angle *= -1;
+
+					}
+					_curDir = Utils.Rotate(_curDir, -angle, axis);
+					_curUp = Utils.Rotate(_curUp, -angle, axis);
+					_curPos += _curDir * (zone.size.x);
+					break;
+				case TurnDir.Right: //RIGHT
+					_curPos += _curDir * (zone.size.z);
+					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.blue));
+					if (_curAxis == PlaneAxis.XZ || _curAxis == PlaneAxis.ZX)
+					{
+						axis = RotationAxis.Y;
+						if (_curUp == Vector3.down)
+							angle *= -1;
+
+					}
+					else if (_curAxis == PlaneAxis.XY || _curAxis == PlaneAxis.YX)
+					{
+						axis = RotationAxis.Z;
+						
+					}
+					else
+					{
+						axis = RotationAxis.X;
+						if (_curDir == Vector3.back && _curUp == Vector3.left)
+							angle *= -1;
+						if (_curDir == Vector3.forward && _curUp == Vector3.left)
+							angle *= -1;
+						if (_curDir == Vector3.up && _curUp == Vector3.left)
+							angle *= -1;
+
+					}
+					_curDir = Utils.Rotate(_curDir, angle, axis);
+					_curUp = Utils.Rotate(_curUp, angle, axis);
+					_curPos += _curDir * (zone.size.x);
+					break;
+				
 			}
-			_genPoints.Add(new GenPoints(_curPos, _curUp));
+			_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp));
 		}
 
 		//Floor Builder
