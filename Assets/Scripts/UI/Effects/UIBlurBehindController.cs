@@ -52,13 +52,13 @@ namespace LuminousVector
 			}
 		}
 
-		private Rect screenRect;
+		//private Rect screenRect;
 		private List<Rect> blurRegions;
 
 		void Init()
 		{
 			blurRegions = new List<Rect>();
-			screenRect = new Rect(0, 0, Screen.width, Screen.height);
+			//screenRect = new Rect(0, 0, Screen.width, Screen.height);
 		}
 
 
@@ -150,8 +150,8 @@ namespace LuminousVector
 				rt = rt2;
 			}
 
-			ComputeBuffer buffer = new ComputeBuffer(blurRegions.Count, 4);
-			buffer.SetData(blurRegions.ToArray());
+			//ComputeBuffer buffer = new ComputeBuffer(blurRegions.Count, 4);
+			//buffer.SetData(blurRegions.ToArray());
 			//blurMaterial.SetBuffer("_BlurRegions", buffer);
 
 			Graphics.Blit(source, destination);

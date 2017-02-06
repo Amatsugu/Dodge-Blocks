@@ -24,9 +24,14 @@ namespace LuminousVector.LevelGenerator
 
 		}
 
-		public Voxel Next()
+		public Voxel NextVoxel()
 		{
 			return _voxels[_curVoxel++];
+		}
+
+		public Voxel GetVoxel(int x, int y)
+		{
+			return _voxels[_width * y + x];
 		}
 
 		public Slice(int width, int height, List<Voxel> voxels)

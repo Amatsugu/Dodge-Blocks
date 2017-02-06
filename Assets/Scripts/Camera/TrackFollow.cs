@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using LuminousVector.LevelGenerator;
 
@@ -12,15 +13,23 @@ namespace LuminousVector
 		public bool auto = false;
 		public float speed = 5;
 		public Text text;
+		public Text seed;
 
 		public int _curPoint = 0;
 		private int _prevPoint = 0;
 		private float _progress = 0;
 		private GenPoints _thisPoint { get { return generator._genPoints[_curPoint]; } }
 		private GenPoints _lastPoint { get { return generator._genPoints[_prevPoint]; } }
+		
+		void Start()
+		{
+			seed.text = "Seed: " + generator.seed;
+		}
 
 		void Update()
 		{
+			if (Input.GetKeyUp(KeyCode.R))
+				SceneManager.LoadScene(0);
 			if (Input.GetKeyUp(KeyCode.S))
 			{
 				_prevPoint = _curPoint;

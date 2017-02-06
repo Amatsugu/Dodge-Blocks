@@ -16,80 +16,11 @@ Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Dat
 Loading C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-- Completed reload, in  0.168 seconds
+Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\protobuf-net.dll (this message is harmless)
+Loading C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\protobuf-net.dll into Unity Child Domain
+- Completed reload, in  0.137 seconds
 Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\Karuta\Documents\GitHub\Dodge Blocks\Build\Build_Data\Managed\System.dll (this message is harmless)
-desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+desktop: 1920x1080 60Hz; virtual: 3286x1187 at 0,0
 <RI> Initializing input.
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
-<RI.Hid> Failed to create device file:
- 2 The system cannot find the file specified.
-
- 
-(Filename:  Line: 54)
-
 <RI> Input initialized.
-<RI> Initialized touch support.
-UnloadTime: 9.319901 ms
-Setting up 2 worker threads for Enlighten.
-  Thread -> id: 4d6c -> priority: 1 
-  Thread -> id: 18d4 -> priority: 1 
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 21.138567 ms
-
-Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 492.
-Total: 7.920592 ms (FindLiveObjects: 0.043061 ms CreateObjectMapping: 0.029234 ms MarkObjects: 7.806814 ms  DeleteObjects: 0.005135 ms)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 3.489185 ms
-
-Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 492.
-Total: 0.695703 ms (FindLiveObjects: 0.060444 ms CreateObjectMapping: 0.016987 ms MarkObjects: 0.611950 ms  DeleteObjects: 0.005530 ms)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 6.014024 ms
-
-Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 496.
-Total: 0.422320 ms (FindLiveObjects: 0.032000 ms CreateObjectMapping: 0.009876 ms MarkObjects: 0.375703 ms  DeleteObjects: 0.003950 ms)
-

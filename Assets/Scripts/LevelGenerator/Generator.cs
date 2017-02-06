@@ -195,8 +195,8 @@ namespace LuminousVector
 
 				foreach (ParticleSystem p in particleSystems)
 				{
-					if (_particles == null || _particles.Length < p.maxParticles)
-						_particles = new ParticleSystem.Particle[p.maxParticles];
+					if (_particles == null || _particles.Length < p.main.maxParticles)
+						_particles = new ParticleSystem.Particle[p.main.maxParticles];
 					int pCount = p.GetParticles(_particles);
 					for (int i = 0; i < pCount; i++)
 					{
