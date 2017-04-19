@@ -112,11 +112,13 @@
     <Compile Include="Assets\Scripts\LevelGenerator\Zone.cs" />
     <Compile Include="Assets\Scripts\Locomotion\AIController.cs" />
     <Compile Include="Assets\Scripts\Locomotion\AINode.cs" />
+    <Compile Include="Assets\Scripts\Locomotion\AdvancedMotor.cs" />
     <Compile Include="Assets\Scripts\Locomotion\ControlMethodSwitch.cs" />
     <Compile Include="Assets\Scripts\Locomotion\Controller.cs" />
     <Compile Include="Assets\Scripts\Locomotion\Motor.cs" />
     <Compile Include="Assets\Scripts\Locomotion\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Locomotion\PlayerControllerAlt.cs" />
+    <Compile Include="Assets\Scripts\Locomotion\TouchController.cs" />
     <Compile Include="Assets\Scripts\ObjectManagement\ObjectPoolManager.cs" />
     <Compile Include="Assets\Scripts\ObjectManagement\ObjectPoolerWorld.cs" />
     <Compile Include="Assets\Scripts\ObjectManagement\PooledGameObject.cs" />

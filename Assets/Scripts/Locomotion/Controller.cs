@@ -7,7 +7,7 @@ namespace LuminousVector
 	public abstract class Controller : MonoBehaviour
 	{
 
-		protected Vector3 strafeVector = new Vector3();
+		private Vector3 strafeVector = new Vector3();
 		protected Motor _motor;
 		protected Vector3 _lastPos;
 
@@ -24,9 +24,9 @@ namespace LuminousVector
 				if (Input.GetKeyUp(KeyCode.Space))
 					SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 			}else
-				Control();
+				strafeVector = Control(strafeVector);
 		}
 
-		protected abstract void Control();
+		protected abstract Vector3 Control(Vector3 strafeVector);
 	}
 }

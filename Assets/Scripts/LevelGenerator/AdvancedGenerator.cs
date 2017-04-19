@@ -114,7 +114,7 @@ namespace LuminousVector.LevelGenerator
 			{
 
 				BuildZoneSlice(zone.NextSlice(), i, _curAxis);
-				BuildFloorSlice((int)zone.size.x, i, _curAxis);
+				BuildFloorSlice((int)zone.size.x, i);
 			}
 			_curPos += _curDir * (zone.size.z - 1);
 			_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp));
@@ -146,6 +146,8 @@ namespace LuminousVector.LevelGenerator
 			turn.name = "Zone " + _worldZones.Count + " ("+ zone.turnDir +")";
 			turn.transform.position = _curPos;
 			turn.transform.parent = transform;
+			turn.transform.rotation = Quaternion.LookRotation(_curDir, _curUp);
+			_worldZones.Add(turn);
 			RotationAxis axis;
 			float angle = Mathf.PI / 2;
 			switch (zone.turnDir)
@@ -153,38 +155,54 @@ namespace LuminousVector.LevelGenerator
 				case TurnDir.Up: //UP
 					for(int i = 1; i <= zone.size.z; i ++)
 					{
-						BuildFloorSlice((int)zone.size.x, i, _curAxis);
+						BuildFloorSlice((int)zone.size.x, i);
+					}
+					for (int i = 0; i <= zone.size.y; i++)
+					{
+						BuildVerticalFloorSlice((int)zone.size.x, i-1, zone.size.z);
 					}
 					_curPos += _curDir * (zone.size.z);
 					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.gray));
-
 					angle *= TurnHelper.TurnUp(_curAxis, _curDir, _curUp, out axis);
 					_curDir = Utils.Rotate(_curDir, -angle, axis);
 					_curUp = Utils.Rotate(_curUp, -angle, axis);
 					_curPos += _curDir * (zone.size.y);
 					break;
 				case TurnDir.Down: //DOWN
+					for (int i = 1; i <= (int)(zone.size.z / 2); i++)
+					{
+						BuildFloorSlice((int)zone.size.x, i);
+					}
+					for (int i = 0; i <= (int)(zone.size.y / 2); i++)
+					{
+						BuildVerticalFloorSlice((int)zone.size.x, i - (int)(zone.size.y / 2) - 1, (int)(zone.size.z / 2));
+					}
 					_curPos += _curDir * (zone.size.z - 1);
 					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.yellow));
-
 					angle *= TurnHelper.TurnDown(_curAxis, _curDir, _curUp, out axis);
 					_curDir = Utils.Rotate(_curDir, angle, axis);
 					_curUp = Utils.Rotate(_curUp, angle, axis);
 					_curPos += _curDir * (zone.size.y - 1);
 					break;
 				case TurnDir.Left: //LEFT
+					for (int i = 1; i <= zone.size.z + (int)(zone.size.z / 2); i++)
+					{
+						BuildFloorSlice((int)zone.size.x, i);
+					}
 					_curPos += _curDir * (zone.size.z);
 					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.black));
-
 					angle *= TurnHelper.TurnLeft(_curAxis, _curDir, out axis);
 					_curDir = Utils.Rotate(_curDir, -angle, axis);
 					_curUp = Utils.Rotate(_curUp, -angle, axis);
 					_curPos += _curDir * (zone.size.x);
 					break;
 				case TurnDir.Right: //RIGHT
+					for (int i = 1; i <= zone.size.z + (int)(zone.size.z/2); i++)
+					{
+						BuildFloorSlice((int)zone.size.x, i);
+					}
 					_curPos += _curDir * (zone.size.z);
 					_genPoints.Add(new GenPoints(_curPos, _curDir, _curUp, Color.blue));
-
 					angle *= TurnHelper.TurnRight(_curAxis, _curUp, out axis);
 					_curDir = Utils.Rotate(_curDir, angle, axis);
 					_curUp = Utils.Rotate(_curUp, angle, axis);
@@ -196,7 +214,7 @@ namespace LuminousVector.LevelGenerator
 		}
 
 		//Floor Builder
-		void BuildFloorSlice(int width, float curPos, PlaneAxis axis)
+		void BuildFloorSlice(int width, float curPos)
 		{
 			Vector3 pos;
 			for (float x = 0; x < width; x++)
@@ -205,6 +223,18 @@ namespace LuminousVector.LevelGenerator
 				float x1 = x + (width / -2f);
 				x1 += .5f;
 				pos = new Vector3(x1, jitterValue, curPos);
+				_floorVoxels.Add(_floorVoxelPool.Instantiate(pos, Quaternion.identity, _worldZones[_worldZones.Count - 1].transform));
+			}
+		}
+		void BuildVerticalFloorSlice(int width, float curPos, float yOffset)
+		{
+			Vector3 pos;
+			for (float x = 0; x < width; x++)
+			{
+				float jitterValue = UnityEngine.Random.Range(-planeJittter, planeJittter) + 1;
+				float x1 = x + (width / -2f);
+				x1 += .5f;
+				pos = new Vector3(x1, curPos, jitterValue + yOffset);
 				_floorVoxels.Add(_floorVoxelPool.Instantiate(pos, Quaternion.identity, _worldZones[_worldZones.Count - 1].transform));
 			}
 		}

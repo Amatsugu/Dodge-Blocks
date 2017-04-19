@@ -1,20 +1,19 @@
-using UnityEngine;
-using UnityStandardAssets.ImageEffects;
 using System.Collections;
-
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace LuminousVector
 {
 	[RequireComponent(typeof(Rigidbody))]
-	public class Motor : MonoBehaviour
+	public class AdvancedMotor : MonoBehaviour
 	{
-
 		public float startSpeed = 25;
 		public float acceleration = 2;
 		public float strafeSpeed = 2;
+		public float turnSpeed = 2;
 		public float sheildRegenRate = 1;
 		public float scorePenalty = 500;
-		[Range(0,1)]
+		[Range(0, 1)]
 		public float velLossMulti = .75f;
 		public float velRecoveryRate = 1f;
 
@@ -22,13 +21,13 @@ namespace LuminousVector
 		[HideInInspector]
 		public Vector3 strafeVector;
 		[HideInInspector]
-		public float lerpProgress;
+		public float strafeProgress;
 		[HideInInspector]
 		public Vector3 curPos;
 		public Vector3 basePos;
 		[HideInInspector]
 		public float curVel { get { return _curVel; } }
-		
+
 		private Transform _transform;
 		private Rigidbody _rigidBody;
 		private float _velMulti = 1;
@@ -38,6 +37,9 @@ namespace LuminousVector
 		private Vector3 _desiredVector;
 		[SerializeField]
 		private bool _isDead = false;
+		private Vector3 _fwd;
+		private Vector3 _up;
+		private float _turnProgress;
 
 		// Use this for initialization
 		void Start()
@@ -49,26 +51,39 @@ namespace LuminousVector
 		}
 
 		// Update is called once per frame
-		void LateUpdate()
+		void Update()
 		{
 			if (_isDead)
 				return;
 			//Progess animation
-			if (lerpProgress < 1)
-				lerpProgress += strafeSpeed * Time.deltaTime;
-			if (lerpProgress > 1)
-				lerpProgress = 1;
+			//Strafe
+			if (strafeProgress < 1)
+				strafeProgress += strafeSpeed * Time.deltaTime;
+			if (strafeProgress > 1)
+				strafeProgress = 1;
+			//Turn
+			if (_turnProgress < 1)
+				_turnProgress += turnSpeed * Time.deltaTime;
+			if (_turnProgress > 1)
+				_turnProgress = 1;
+
+			//Apply Rotation
+			if (_turnProgress != 1)
+				_transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(_fwd, _up), _turnProgress);
 
 
 			//Apply animation
 			_desiredVector = basePos + strafeVector;
-			_desiredVector.z = curPos.z;
-			curPos = Vector3.Lerp(curPos, _desiredVector, lerpProgress);
-
+			if(_fwd == Vector3.forward || _fwd == Vector3.back)
+				_desiredVector.z = curPos.z;
+			else if (_fwd == Vector3.left || _fwd == Vector3.right)
+				_desiredVector.x = curPos.x;
+			else if (_fwd == Vector3.up || _fwd == Vector3.down)
+				_desiredVector.y = curPos.y;
+			curPos = Vector3.Lerp(curPos, _desiredVector, strafeProgress);
 
 			//Apply forward motion
-			curPos.z += (_curVel * _velMulti) * Time.deltaTime;
-
+			curPos += _fwd * (_curVel * _velMulti) * Time.deltaTime;
 
 			//Acceleration
 			_curVel += acceleration * Time.deltaTime;
@@ -93,11 +108,11 @@ namespace LuminousVector
 			_transform.position = curPos;
 		}
 
-		//Move Player
-		public void Loop(float distance)
+		void Turn(Vector3 fwd, Vector3 up)
 		{
-			curPos.z -= distance;
-			_transform.position = curPos;
+			_fwd = fwd.normalized;
+			_up = up.normalized;
+			_turnProgress = 0;
 		}
 
 		void OnTriggerEnter(Collider c)

@@ -37,7 +37,7 @@ namespace LuminousVector
 			}
 
 			//Simulate Shake
-			shake.Simulate();
+			shake.GetShake();
 
 			//Apply Shake
 			Vector3 pos = Camera.main.transform.localPosition;
@@ -49,7 +49,7 @@ namespace LuminousVector
 
 		protected override void TiggerEffect()
 		{
-			shake.Shake();
+			shake.StartShake();
 		}
 	}
 

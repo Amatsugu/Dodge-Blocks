@@ -7,7 +7,7 @@ namespace LuminousVector
 	public class PlayerControllerAlt : Controller
 	{
 		// Update is called once per frame
-		protected override void Control()
+		protected override Vector3 Control(Vector3 strafeVector)
 		{
 			//Vertical
 			if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
@@ -35,6 +35,7 @@ namespace LuminousVector
 				_motor.lerpProgress = 0;
 
 			 _lastPos = _motor.strafeVector = strafeVector;
+			return strafeVector;
 		}
 	}
 }

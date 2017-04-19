@@ -42,7 +42,6 @@ namespace LuminousVector
 			{
 				if (!obj.activeInHierarchy)
 					continue;
-				Debug.DrawLine(transform.position, obj.transform.position, Color.cyan);
 			}
 			if (GameMaster.playerDead)
 				return;

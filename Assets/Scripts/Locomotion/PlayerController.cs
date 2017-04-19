@@ -7,7 +7,7 @@ namespace LuminousVector
 	public class PlayerController : Controller
 	{
 		// Update is called once per frame
-		protected override void Control()
+		protected override Vector3 Control(Vector3 strafeVector)
 		{
 			//Vertical
 			if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
@@ -25,11 +25,14 @@ namespace LuminousVector
 			else
 				strafeVector.x = 0;
 
+
+
 			//Reset Animation progress
 			if (strafeVector != _lastPos)
 				_motor.lerpProgress = 0;
 
 			 _lastPos = _motor.strafeVector = strafeVector;
+			return strafeVector;
 		}
 	}
 }

@@ -44,8 +44,8 @@ namespace LuminousVector
 		{
 			_cubes = new List<PooledGameObject>();
 			_phillars = new List<PooledGameObject>();
-			_cubePool = ObjectPoolManager.GetPool("CubePool");
-			_phillarPool = ObjectPoolManager.GetPool("PhillarPool");
+			_cubePool = ObjectPoolManager.GetPool("FloorVoxelPool");
+			_phillarPool = ObjectPoolManager.GetPool("VoxelPool");
 			if (generateCeiling)
 				_wallCount++;
 			if (generateWalls)

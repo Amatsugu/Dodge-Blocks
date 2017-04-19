@@ -22,7 +22,7 @@ namespace LuminousVector
 		private Vector3 _curPos = new Vector3();
 
 
-		protected override void Control()
+		protected override Vector3 Control(Vector3 strafeVector)
 		{
 			_nodes.Clear();
 			_selectedNode = null;
@@ -32,7 +32,7 @@ namespace LuminousVector
 				if (Physics.Raycast(_motor.curPos, Vector3.forward, range * innerRangeMulti))
 					_posFound = false;
 				else
-					return;
+					return strafeVector;
 			}
 			for (int y = -1; y <= 1; y++)
 			{
@@ -62,7 +62,6 @@ namespace LuminousVector
 						});
 					}
 				}
-
 			}
 			foreach(AINode n in from node in _nodes orderby node.GetOffset(strafeVector) descending select node)
 			{
@@ -80,20 +79,21 @@ namespace LuminousVector
 			}
 			//Debug.Break();
 			if (_selectedNode == null)
-				return;
-			if (!HasMoveHazard() || Physics.Raycast(_motor.curPos, Vector3.forward, distPStrafe))
+				return strafeVector;
+			if (!HasMoveHazard(strafeVector) || Physics.Raycast(_motor.curPos, Vector3.forward, distPStrafe))
 			{
 				//_posFound = true;
-				SetPos(_selectedNode.position);
+				strafeVector = SetPos(_selectedNode.position, strafeVector);
 
 				if (strafeVector != _lastPos)
 					_motor.lerpProgress = 0;
 
 				_lastPos = _motor.strafeVector = strafeVector;
 			}
+			return strafeVector;
 		}
 
-		bool HasMoveHazard()
+		bool HasMoveHazard(Vector3 strafeVector)
 		{
 			bool hazard = false;
 			for (int y = -1; y <= 1; y++)
@@ -114,10 +114,11 @@ namespace LuminousVector
 			return hazard;
 		}
 
-		void SetPos(Vector3 pos)
+		Vector3 SetPos(Vector3 pos, Vector3 strafeVector)
 		{
 			strafeVector.x = Mathf.Clamp(pos.x, -1, 1);
 			strafeVector.y = Mathf.Clamp(pos.y, -1, 1);
+			return strafeVector;
 		}
 	}
 }

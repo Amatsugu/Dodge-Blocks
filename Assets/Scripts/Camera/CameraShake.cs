@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace LuminousVector
 {
-	public class CameraShake : Object
+	public class CameraShake
 	{
 		[SerializeField]
 		public float ammount = 1;
@@ -19,7 +19,7 @@ namespace LuminousVector
 
 		public Vector3 shakeOffset
 		{
-			get { Simulate(); return _lastShakeValue; }
+			get { return GetShake();}
 		}
 
 		private Vector3 _lastShakeValue = Vector3.zero;
@@ -28,12 +28,13 @@ namespace LuminousVector
 		private float _intensity;
 
 
-		public void Shake()
+		public CameraShake StartShake()
 		{
 			_intensity = intensity;
+			return this;
 		}
 
-		public Vector3 Simulate()
+		public Vector3 GetShake()
 		{
 			if (_intensity > 0)
 			{

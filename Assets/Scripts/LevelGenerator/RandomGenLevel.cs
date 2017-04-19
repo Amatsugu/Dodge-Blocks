@@ -82,7 +82,7 @@ namespace LuminousVector.LevelGenerator
 		RandomGenLevel GenerateTurn()
 		{
 			TurnDir dir = (TurnDir)_rand.Next(4);
-			TurnZone zone = new TurnZone(3, 3, 3, dir);
+			TurnZone zone = new TurnZone(width, width, width, dir);
 			_lastTurn = 0;
 			AddZone(zone);
 			return this;
